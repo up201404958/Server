@@ -62,15 +62,39 @@ public class ServerThread extends Thread {
                      else
                          sendMessage("REGISTED");
                 }else if(parts[0].equals("ARTS")) { //getArtists
-                		ArrayList <String> artists = getAlbuns();
-                		System.out.println("hey im here");
+                		ArrayList <String> artists = getArtists();
+                		//System.out.println("hey im here");
                 		sendMessage(artists);
-                }else if(parts[0].equals("CREATE")) {
+                	}else if(parts[0].equals("ALBS")){
+                		ArrayList <String> albums = getAlbums();
+                		sendMessage(albums);
+                	}else if(parts[0].equals("SNGS")) {
+                		ArrayList <String> songs = getSongs();
+                		sendMessage(songs);
+                	}else if(parts[0].equals("SNGPLST")) {         		
+                		ArrayList <String> playlists=getPlaylist(parts);
+                		sendMessage(playlists);
+                	}else if(parts[0].equals("CREATE")) {
                 		createPlaylist(parts);
                 		sendMessage("NEW PLAYLIST");
                 }else if(parts[0].equals("PLAYLST")) {
                 		ArrayList <String> playlists=getPlaylist(parts);
             			sendMessage(playlists);
+                }else if(parts[0].equals("ADDSNG")) {
+                		insertSongPlaylist(parts);
+                		sendMessage("ADDED SONG");
+                }else if(parts[0].equals("GOTOTA")) { //specific album
+                		ArrayList <String> album=getAlbumSongs(parts);
+                		sendMessage(album);
+                }else if(parts[0].equals("PLSTSNG")) {
+                		ArrayList <String> songs=getPlaylistSongs(parts);
+                		sendMessage(songs);
+                }else if(parts[0].equals("KPLSTSNG")) {
+            			ArrayList <String> songs=orderPlaylistKey(parts);
+            			sendMessage(songs);
+                }else if(parts[0].equals("BPLSTSNG")) {
+            			ArrayList <String> songs=orderPlaylistBPM(parts);
+            			sendMessage(songs);
                 }
                
               
@@ -113,8 +137,81 @@ public class ServerThread extends Thread {
 		return playlists;
 	
 	}
-	//GET ALBUMS
-	private ArrayList<String> getAlbuns() throws SQLException {
+	//GET PLAYLISTS SONGS
+	private ArrayList<String> getPlaylistSongs(String[] parts) throws SQLException {
+		
+		ArrayList <String> songs = new ArrayList<String>(); //result set
+
+		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
+		String query="SELECT * FROM playlist_song JOIN song ON song_id = song.id WHERE playlist_id = ?";
+		java.sql.PreparedStatement preparedStmt = myCon.prepareStatement(query);
+		preparedStmt.setString(1,parts[1]);
+		ResultSet myRs = preparedStmt.executeQuery();
+		
+		while(myRs.next()) {
+			songs.add(myRs.getInt("id")+","+myRs.getString("name")+","+myRs.getString("genre")+","+myRs.getString("duration")+","+myRs.getString("bpm")+","+myRs.getString("key"));
+		}
+		System.out.println(songs);
+		return songs;
+	
+	}
+	//INSERT SONG INTO PLAYLIST
+	private void insertSongPlaylist(String[] parts) throws SQLException {
+		
+		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
+		String query="INSERT INTO playlist_song (playlist_id,song_id)"+" VALUES(?,?)";
+		java.sql.PreparedStatement preparedStmt = myCon.prepareStatement(query);
+		preparedStmt.setString(1,parts[1]);
+		preparedStmt.setString(2,parts[2]);
+		preparedStmt.execute();    
+	
+	}
+	//ORDER PLAYLIST BPM
+	private ArrayList<String> orderPlaylistBPM(String[] parts) throws SQLException {
+		
+		ArrayList <String> songs = new ArrayList<String>();
+		
+		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
+		String query="SELECT * FROM playlist_song JOIN playlists ON playlist_id=playlists.id JOIN song ON song_id=song.id WHERE playlists.id = ? ORDER BY bpm ASC";
+		java.sql.PreparedStatement preparedStmt = myCon.prepareStatement(query);
+		preparedStmt.setString(1,parts[1]); 
+		System.out.println("hey");
+		
+		ResultSet myRs=preparedStmt.executeQuery();    
+		
+		while(myRs.next()) {
+			songs.add(myRs.getInt("id")+","+myRs.getString("song.name")+","+myRs.getString("genre")+","+myRs.getString("duration")+","+myRs.getString("bpm")+","+myRs.getString("key"));
+		}
+		
+		return songs;
+		
+	}
+	//ORDER PLAYLIST KEY
+private ArrayList<String> orderPlaylistKey(String[] parts) throws SQLException {
+		
+		ArrayList <String> songs = new ArrayList<String>();
+		
+		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
+		String query="SELECT * FROM playlist_song "+
+					 "JOIN playlists ON playlist_id=playlists.id "+
+					 "JOIN song ON song_id=song.id "+
+					 "JOIN key_c ON song.key = key_c.id "+
+					 "WHERE playlists.id = ? "+
+					 "ORDER BY value ASC";
+		java.sql.PreparedStatement preparedStmt = myCon.prepareStatement(query);
+		preparedStmt.setString(1,parts[1]);
+		ResultSet myRs=preparedStmt.executeQuery();    
+		
+		while(myRs.next()) {
+			songs.add(myRs.getInt("song.id")+","+myRs.getString("song.name")+","+myRs.getString("genre")+","+myRs.getString("duration")+","+myRs.getString("bpm")+","+myRs.getString("key"));
+		}
+		
+		
+		return songs;
+		
+	}
+	//GET ARTISTS
+	private ArrayList<String> getArtists() throws SQLException {
     		
     		ArrayList <String> artists = new ArrayList<String>(); //result set
 		
@@ -130,6 +227,56 @@ public class ServerThread extends Thread {
     		return artists;
     		
 	}
+	//GET ALBUMS
+	private ArrayList<String> getAlbums() throws SQLException {
+	    		
+	    		ArrayList <String> albums = new ArrayList<String>(); //result set
+			
+	    		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
+	    		
+	    		Statement myStmt = myCon.createStatement();
+	    		ResultSet myRs = myStmt.executeQuery("SELECT * FROM albuns JOIN artists WHERE artist_id = artists.id");
+	    		while(myRs.next()) {
+	    			System.out.println(myRs.getInt("id")+","+myRs.getString("albuns.name")+","+myRs.getInt("year")+myRs.getString("genre")+myRs.getString("artists.name"));
+	    			albums.add(myRs.getInt("id")+","+myRs.getString("albuns.name")+","+myRs.getInt("year")+","+myRs.getString("genre")+","+myRs.getString("artists.name"));
+	    		}
+	    		
+	    		return albums;
+	    		
+	}
+	private ArrayList<String> getAlbumSongs(String[] parts) throws SQLException {
+		
+		ArrayList <String> album = new ArrayList<String>(); //result set
+		
+		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
+		
+		String query="SELECT * FROM song WHERE album_id = ?";
+		java.sql.PreparedStatement preparedStmt = myCon.prepareStatement(query);
+		preparedStmt.setString(1,parts[1]);
+		ResultSet myRs=preparedStmt.executeQuery();    
+		
+		while(myRs.next()) {
+			album.add(myRs.getInt("id")+","+myRs.getString("song.name")+","+myRs.getString("song.genre")+","+myRs.getString("duration")+","+myRs.getString("key")+","+myRs.getString("bpm"));
+		}
+		
+		return album;
+	}
+	//GET SONGS
+	private ArrayList<String> getSongs() throws SQLException {
+		
+		ArrayList <String> songs = new ArrayList<String>(); //result set
+	
+		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
+		
+		Statement myStmt = myCon.createStatement();
+		ResultSet myRs = myStmt.executeQuery("SELECT * FROM song JOIN artists ON artist_id = artists.id JOIN albuns ON album_id = albuns.id");
+		while(myRs.next()) {
+			songs.add(myRs.getInt("id")+","+myRs.getString("song.name")+","+myRs.getString("song.genre")+","+myRs.getInt("bpm")+","+myRs.getString("key")+","+myRs.getString("duration")+","+myRs.getString("artists.name")+","+myRs.getString("albuns.name"));
+		}
+		
+		return songs;
+		
+}
 
 	//CHECK REGISTER
     private int checkRegister(String[] parts) throws SQLException {

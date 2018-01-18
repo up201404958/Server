@@ -1,4 +1,8 @@
-
+/**
+ * This class represents the server where requests arrive
+ * 
+ *
+ */
 import java.io.*;
 import java.net.*;
 import java.sql.Connection;
@@ -8,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.mysql.jdbc.PreparedStatement;
+
 
 public class Server{
     //ServerSocket ServerSocket;
