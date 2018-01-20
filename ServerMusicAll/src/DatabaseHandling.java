@@ -5,11 +5,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+/**
+ * This classes handles all interactions that require to get Database data such as songs,albums,artists
+ *
+ */
 public class DatabaseHandling {
 
-		// TODO Auto-generated constructor stub
-	
-		//GET ARTISTS
+		
+		/**
+		 * @return information about all the artists available in the database
+		 * @throws SQLException
+		 */
 		protected ArrayList<String> getArtists() throws SQLException {
 	    		
 	    		ArrayList <String> artists = new ArrayList<String>(); //result set
@@ -27,6 +33,10 @@ public class DatabaseHandling {
 	    		
 		}
 		//GET ALBUMS
+		/**
+		 * @return an ArrayList with information every album available in the database
+		 * @throws SQLException
+		 */
 		protected ArrayList<String> getAlbums() throws SQLException {
 		    		
 		    		ArrayList <String> albums = new ArrayList<String>(); //result set
@@ -43,6 +53,11 @@ public class DatabaseHandling {
 		    		return albums;
 		    		
 		}
+		/**
+		 * @param parts - specific album id
+		 * @return songs that are part of a certain album 
+		 * @throws SQLException
+		 */
 		protected ArrayList<String> getAlbumSongs(String[] parts) throws SQLException {
 			
 			ArrayList <String> album = new ArrayList<String>(); //result set
@@ -61,6 +76,10 @@ public class DatabaseHandling {
 			return album;
 		}
 		//GET SONGS
+		/**
+		 * @return an ArrayList with information about every song available in the database
+		 * @throws SQLException
+		 */
 		protected ArrayList<String> getSongs() throws SQLException {
 			
 			ArrayList <String> songs = new ArrayList<String>(); //result set

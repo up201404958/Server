@@ -10,34 +10,51 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * This class represents the thread that deals with the client request
+ * In the run method of the Thread client requests are interpreted using a custom communication protocol 
+ */
 public class ServerThread extends Thread {
+	
+	/**
+	 * Socket attributed to the thread
+	 */
 	Socket ServerClient;
-
+	/**
+	 * int Id number
+	 */
 	int clientNo;
-	
 	Connection myCon;
+	/**
+	 * Stream used for server output
+	 */
 	ObjectOutputStream out;
+	/**
+	 * Stream used for messages received
+	 */
 	ObjectInputStream in;
+	/**
+	 * String used for response 
+	 */
 	String message;
+	/**
+	 * array used for file transfer
+	 */
 	byte data[];
-	
-	
 	
 	public ServerThread(Socket skt,int counter) {
 		this.ServerClient=skt;
 		this.clientNo=counter;
 	}
 	public ServerThread() {}
-	public void run()
-    {
-       //2. Wait for connection
-       //while(true) {
+	public void run(){
+  
 		UserHandling user = new UserHandling();
         DatabaseHandling data = new DatabaseHandling();
         PlaylistHandling plst = new PlaylistHandling();
 		
 		System.out.println("Connection received from " + ServerClient.getInetAddress().getHostName() + "number" + this.clientNo);
-            //3. get Input and Output streams
+    
             try {
 				out = new ObjectOutputStream(ServerClient.getOutputStream());
 				out.flush();
@@ -45,11 +62,9 @@ public class ServerThread extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-            //sendMessage("Connection successful");
-            
+         
             int check=0;
  
-            //4. The two parts communicate via the input and output streams
             try{
                 message = (String)in.readObject();
                 System.out.println("client sent>" + message);
@@ -72,8 +87,7 @@ public class ServerThread extends Thread {
                          sendMessage("REGISTED");
                 }else if(parts[0].equals("CHNGPASS")) {
                 		user.changePass(parts);
-                	
-                }else if(parts[0].equals("ARTS")) { //getArtists
+                	}else if(parts[0].equals("ARTS")) { 
                 		ArrayList <String> artists = data.getArtists();
                 		sendMessage(artists);
                 	}else if(parts[0].equals("ALBS")){
@@ -94,7 +108,7 @@ public class ServerThread extends Thread {
                 }else if(parts[0].equals("ADDSNG")) {
                 		plst.insertSongPlaylist(parts);
                 		sendMessage("ADDED SONG");
-                }else if(parts[0].equals("GOTOTA")) { //specific album
+                }else if(parts[0].equals("GOTOTA")) { 
                 		ArrayList <String> album=data.getAlbumSongs(parts);
                 		sendMessage(album);
                 }else if(parts[0].equals("PLSTSNG")) {
@@ -111,8 +125,7 @@ public class ServerThread extends Thread {
                 }else if(parts[0].equals("MYSNGS")){
                 		ArrayList <String> songs=user.getUserSongs(parts);
                 		sendMessage(songs);
-                	
-                }
+                	}
                
             }
             catch(ClassNotFoundException classnot){
@@ -124,7 +137,12 @@ public class ServerThread extends Thread {
 			}
         }
 	
-	//SEND MUSIC
+
+	/**
+	 * This method send a specific .wav file requested by the client
+	 * @param parts music id
+	 * @throws IOException
+	 */
 	private void sendMusic(String[] parts) throws IOException {
 		
 		String path = "music/music_" + parts[1]+".wav";
@@ -142,7 +160,11 @@ public class ServerThread extends Thread {
          fileBuffer.close();
          fileStream.close();
 	}
-	//SEND MESSAGE
+
+    /**
+     * This method sends a message to the client reporting success or failure
+     * @param msg message to be sent to client
+     */
     void sendMessage(String msg){
         
     		try{
@@ -154,8 +176,13 @@ public class ServerThread extends Thread {
             ioException.printStackTrace();
         }
     }
-    //SEND MESSAGE POLYMORPHISM
+  
+	/**
+	 * This method sends an ArrayList to the client containing requested information
+	 * @param array information to be sent
+	 */
 	void sendMessage(ArrayList<String> array) {
+		
 		try{
             out.writeObject(array);
             out.flush();

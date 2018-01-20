@@ -5,10 +5,36 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+/**
+ * This classes handles all interactions with the database refering users
+ *
+ */
 public class UserHandling{
 
 
-	//CHECK REGISTER
+
+	 /**
+	 * @return the number of users of the application
+	 * @throws SQLException
+	 */
+	protected int numberOfUsers() throws SQLException{
+		 
+		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
+		Statement myStmt = myCon.createStatement();
+		ResultSet myRs = myStmt.executeQuery("SELECT COUNT(*) AS count FROM users");
+		
+		if(myRs.first()) {
+			return myRs.getInt("count");
+		}
+		return 0;
+	 
+	 }
+	
+    /**
+     * @param parts name and password to be registered 
+     * @return 1-success 0-failure
+     * @throws SQLException
+     */
     protected int checkRegister(String[] parts) throws SQLException {
     		
     		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
@@ -25,7 +51,13 @@ public class UserHandling{
     		return 0;
 	}
     
-    //CHECK VALID USER 
+    
+    	/**
+    	 * This method checks is the username is valid
+    	 * @param name of the user
+    	 * @return 1-success 0-failure
+    	 * @throws SQLException
+    	 */
     	protected int checkValidUser(String name) throws SQLException {
     	
     		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
@@ -34,7 +66,6 @@ public class UserHandling{
 		
 		while(myRs.next()) {
 			if(name.equals(myRs.getString("name"))) {
-				System.out.print("same");	
 				return 0;
 			}
 		}
@@ -43,7 +74,13 @@ public class UserHandling{
     
     }
 	
-    //CHECK LOGIN
+
+    /**
+     * This method check if the login was valid
+     * @param parts name and password filled in the login page
+     * @return 1-success 0-failure
+     * @throws SQLException
+     */
     protected int checkLogin(String[] parts) throws SQLException {
     		
     	 	Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
@@ -57,6 +94,11 @@ public class UserHandling{
 		
 		return 0;
 	}
+    /**
+     * This method changes the password of a specific user
+     * @param parts new password and corresponding user
+     * @throws SQLException
+     */
     protected void changePass(String[] parts) throws SQLException {
 		
 		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
@@ -67,6 +109,11 @@ public class UserHandling{
 		preparedStmt.execute();
 		
 	}
+    /**
+     * @param parts user id
+     * @return an ArrayList with information of all the songs that an user has
+     * @throws SQLException
+     */
     protected ArrayList<String> getUserSongs(String[] parts) throws SQLException {
 		
 		ArrayList <String> songs = new ArrayList<String>(); //result set

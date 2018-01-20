@@ -4,11 +4,39 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * This classes handles all interactions with the playlists such as creating, adding song , getting all the playlists from specific user, etc
+ *
+ *
+ */
 public class PlaylistHandling {
 
-	//CREATE PLAYLIST
-		protected void createPlaylist(String[] parts) throws SQLException {
+		
+		/**
+		 * @param parts specific user
+		 * @return how many playlists an user had
+		 * @throws SQLException
+		 */
+		protected int countPlaylists(String[] parts) throws SQLException {
 			
+			Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
+			String query="SELECT COUNT(*) AS count FROM playlists WHERE user_id = ?";
+			java.sql.PreparedStatement preparedStmt = myCon.prepareStatement(query);
+			preparedStmt.setString(1,parts[2]);
+			ResultSet myRs = preparedStmt.executeQuery();
+			
+			if(myRs.next()) {
+				return myRs.getInt("count");
+			}
+			return 0;
+		}
+		
+		/**
+		 * Creates a new playlist
+		 * @param name of the new playlist and corresponding user
+		 * @throws SQLException
+		 */
+		protected void createPlaylist(String[] parts) throws SQLException {
 			Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
 			String query="INSERT INTO playlists (id,name,user_id)"+" values(DEFAULT,?,?)";
 			java.sql.PreparedStatement preparedStmt = myCon.prepareStatement(query);
@@ -16,7 +44,12 @@ public class PlaylistHandling {
 			preparedStmt.setString(2,parts[2]);
 			preparedStmt.execute();    
 		}
-	    //GET PLAYLISTS
+	  
+		/**
+		 * @param parts specific user 
+		 * @return an ArrayList with all the playlists that belong to a certain user
+		 * @throws SQLException
+		 */
 		protected ArrayList<String> getPlaylist(String[] parts) throws SQLException {
 			
 			ArrayList <String> playlists = new ArrayList<String>(); //result set
@@ -34,7 +67,12 @@ public class PlaylistHandling {
 			return playlists;
 		
 		}
-		//GET PLAYLISTS SONGS
+		
+		/**
+		 * @param parts specific playlist id 
+		 * @return an ArrayList with information relative to all the songs present in a specific playlist
+		 * @throws SQLException
+		 */
 		protected ArrayList<String> getPlaylistSongs(String[] parts) throws SQLException {
 			
 			ArrayList <String> songs = new ArrayList<String>(); //result set
@@ -52,7 +90,12 @@ public class PlaylistHandling {
 			return songs;
 		
 		}
-		//INSERT SONG INTO PLAYLIST
+		
+		/**
+		 * inserts a song into a playlist
+		 * @param parts specific playlist and specific song
+		 * @throws SQLException
+		 */
 		protected void insertSongPlaylist(String[] parts) throws SQLException {
 			
 			Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
@@ -63,7 +106,12 @@ public class PlaylistHandling {
 			preparedStmt.execute();    
 		
 		}
-		//ORDER PLAYLIST BPM
+		
+		/**
+		 * @param parts specific playlist id
+		 * @return an Arraylist with a playlist ordered by bpm
+		 * @throws SQLException
+		 */
 		protected ArrayList<String> orderPlaylistBPM(String[] parts) throws SQLException {
 			
 			ArrayList <String> songs = new ArrayList<String>();
@@ -72,7 +120,6 @@ public class PlaylistHandling {
 			String query="SELECT * FROM playlist_song JOIN playlists ON playlist_id=playlists.id JOIN song ON song_id=song.id WHERE playlists.id = ? ORDER BY bpm ASC";
 			java.sql.PreparedStatement preparedStmt = myCon.prepareStatement(query);
 			preparedStmt.setString(1,parts[1]); 
-			System.out.println("hey");
 			
 			ResultSet myRs=preparedStmt.executeQuery();    
 			
@@ -83,7 +130,12 @@ public class PlaylistHandling {
 			return songs;
 			
 		}
-		//ORDER PLAYLIST KEY
+		
+		/**
+		 * @param parts specific playlist id
+		 * @return an Arraylist with a playlist ordered by key
+		 * @throws SQLException
+		 */
 		protected ArrayList<String> orderPlaylistKey(String[] parts) throws SQLException {
 			
 			ArrayList <String> songs = new ArrayList<String>();
