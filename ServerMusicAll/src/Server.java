@@ -16,8 +16,8 @@ import java.sql.SQLException;
  */
 public class Server{
     
-    Connection myCon;
-    Socket connection = null;
+    protected Connection myCon;
+    protected Socket connection = null;
    
     public static void main(String args[]) throws IOException, SQLException{
         

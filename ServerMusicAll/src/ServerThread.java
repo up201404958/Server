@@ -19,28 +19,28 @@ public class ServerThread extends Thread {
 	/**
 	 * Socket attributed to the thread
 	 */
-	Socket ServerClient;
+	protected Socket ServerClient;
 	/**
 	 * int Id number
 	 */
-	int clientNo;
-	Connection myCon;
+	protected int clientNo;
+	protected Connection myCon;
 	/**
 	 * Stream used for server output
 	 */
-	ObjectOutputStream out;
+	protected ObjectOutputStream out;
 	/**
 	 * Stream used for messages received
 	 */
-	ObjectInputStream in;
+	protected ObjectInputStream in;
 	/**
 	 * String used for response 
 	 */
-	String message;
+	protected String message;
 	/**
 	 * array used for file transfer
 	 */
-	byte data[];
+	protected byte data[];
 	
 	public ServerThread(Socket skt,int counter) {
 		this.ServerClient=skt;
