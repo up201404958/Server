@@ -165,7 +165,7 @@ public class ServerThread extends Thread {
      * This method sends a message to the client reporting success or failure
      * @param msg message to be sent to client
      */
-    void sendMessage(String msg){
+    private void sendMessage(String msg){
         
     		try{
             out.writeObject(msg);
@@ -181,7 +181,7 @@ public class ServerThread extends Thread {
 	 * This method sends an ArrayList to the client containing requested information
 	 * @param array information to be sent
 	 */
-	void sendMessage(ArrayList<String> array) {
+	private void sendMessage(ArrayList<String> array) {
 		
 		try{
             out.writeObject(array);

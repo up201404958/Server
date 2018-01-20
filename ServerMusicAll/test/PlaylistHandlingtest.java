@@ -15,7 +15,7 @@ import org.junit.Test;
  */
 public class PlaylistHandlingtest {
 
-	PlaylistHandling test;
+	protected PlaylistHandling test;
 	/**
 	 * Test method for Creating a New Playlist
 	 * @throws SQLException 
