@@ -107,7 +107,6 @@ public class ServerThread extends Thread {
             			sendMessage(playlists);
                 }else if(parts[0].equals("ADDSNG")) {
                 		plst.insertSongPlaylist(parts);
-                		sendMessage("ADDED SONG");
                 }else if(parts[0].equals("GOTOTA")) { 
                 		ArrayList <String> album=data.getAlbumSongs(parts);
                 		sendMessage(album);
@@ -121,6 +120,7 @@ public class ServerThread extends Thread {
             			ArrayList <String> songs=plst.orderPlaylistBPM(parts);
             			sendMessage(songs);
                 }else if(parts[0].equals("DWLD")) {
+                		user.setUserSongs(parts);
                 		sendMusic(parts);
                 }else if(parts[0].equals("MYSNGS")){
                 		ArrayList <String> songs=user.getUserSongs(parts);
@@ -147,7 +147,7 @@ public class ServerThread extends Thread {
 		
 		String path = "music/music_" + parts[1]+".wav";
 		File file = new File(path);
-		data = new byte[2048];
+		data = new byte[4096];
 		FileInputStream fileStream = new FileInputStream(file);
         BufferedInputStream fileBuffer = new BufferedInputStream(fileStream);
         int count;

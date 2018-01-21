@@ -124,7 +124,7 @@ public class PlaylistHandling {
 			ResultSet myRs=preparedStmt.executeQuery();    
 			
 			while(myRs.next()) {
-				songs.add(myRs.getInt("id")+","+myRs.getString("song.name")+","+myRs.getString("genre")+","+myRs.getString("duration")+","+myRs.getString("bpm")+","+myRs.getString("key"));
+				songs.add(myRs.getInt("song.id")+","+myRs.getString("song.name")+","+myRs.getString("genre")+","+myRs.getString("duration")+","+myRs.getString("bpm")+","+myRs.getString("key"));
 			}
 			
 			return songs;

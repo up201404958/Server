@@ -134,5 +134,29 @@ public class UserHandling{
 		System.out.println(songs);
 		return songs;
 	}
+    /**
+     * @param parts user_id and song_id
+     * @throws SQLException
+     */
+    protected int setUserSongs(String[] parts) throws SQLException {
+		
+    		Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?autoReconnect=true&useSSL=false", "root", "lespaul59");
+    		String []dup  = {parts[1],parts[2]};
+    		ArrayList<String> duplicated = getUserSongs(dup);
+    		for(int i=0;i<duplicated.size();i++) {
+    			String [] aux = duplicated.get(i).split(",");
+    			if(parts[1].equals(aux[0])){
+    				return 0;
+    			}
+    		}
+		String query="INSERT INTO user_songs(song_id,user_id) VALUES(?,?)";
+		java.sql.PreparedStatement preparedStmt = myCon.prepareStatement(query);
+		preparedStmt.setString(1,parts[1]);
+		preparedStmt.setString(2,parts[2]);
+		preparedStmt.execute();
+		
+		return 1;
+		
+	}
 
 }
